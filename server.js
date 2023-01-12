@@ -1,59 +1,17 @@
-const express = require("express");
-const { MongoClient: mongodb, ObjectId } = require("mongodb");
+const express = require('express')
+const db = require('./config')
 
-const app = express();
+const app = express()
 
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+const { Food } = require('./models')
 
-let db;
-
-mongodb.connect(
-  "mongodb://localhost/foods_db",
-  { useNewUrlParser: true, useUnifiedTopology: true },
-  (err, client) => {
-    db = client.db();
-    app.listen(3001);
+app.get('/foods', async (req, res) => {
+  try {
+    const foods = await Food.find({})
+    res.json(foods)
+  } catch (err) {
+    res.status(500).json(err)
   }
-);
+})
 
-app.post("/foods", (req, res) => {
-  db.collection("foods").insertOne(req.body, (err, results) => {
-    if (err) throw err;
-    res.json(results);
-  });
-});
-
-app.get("/foods", (req, res) => {
-  db.collection("foods")
-    .find()
-    .toArray((err, results) => {
-      if (err) throw err;
-      res.json(results);
-    });
-});
-
-app.put("/foods/:id", (req, res) => {
-  db.collection("foods").updateOne(
-    { _id: ObjectId(req.params.id) },
-    { $set: req.body },
-    (err, results) => {
-      if (err) throw err;
-      res.send(
-        results.modifiedCount ? "Document updated" : "No document updated"
-      );
-    }
-  );
-});
-
-app.delete("/foods/:id", (req, res) => {
-  db.collection("foods").deleteOne(
-    { _id: ObjectId(req.params.id) },
-    (err, results) => {
-      if (err) throw err;
-      res.send(
-        results.deletedCount ? "Document deleted" : "No document deleted"
-      );
-    }
-  );
-});
+db.once('open', () => app.listen(3001))
