@@ -1,10 +1,10 @@
 const express = require("express");
-const mongodb = require("mongodb").MongoClient;
+const { MongoClient: mongodb, ObjectId } = require("mongodb");
 
 const app = express();
 
-app.use(express.urlencoded({ extended: true }))
-app.use(express.json())
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 let db;
 
@@ -17,13 +17,12 @@ mongodb.connect(
   }
 );
 
-app.post('/foods', (req, res) => {
-  db.collection('foods')
-    .insertOne(req.body, (err, results) => {
-      if (err) throw err
-      res.json(results)
-    })
-})
+app.post("/foods", (req, res) => {
+  db.collection("foods").insertOne(req.body, (err, results) => {
+    if (err) throw err;
+    res.json(results);
+  });
+});
 
 app.get("/foods", (req, res) => {
   db.collection("foods")
@@ -32,4 +31,29 @@ app.get("/foods", (req, res) => {
       if (err) throw err;
       res.json(results);
     });
+});
+
+app.put("/foods/:id", (req, res) => {
+  db.collection("foods").updateOne(
+    { _id: ObjectId(req.params.id) },
+    { $set: req.body },
+    (err, results) => {
+      if (err) throw err;
+      res.send(
+        results.modifiedCount ? "Document updated" : "No document updated"
+      );
+    }
+  );
+});
+
+app.delete("/foods/:id", (req, res) => {
+  db.collection("foods").deleteOne(
+    { _id: ObjectId(req.params.id) },
+    (err, results) => {
+      if (err) throw err;
+      res.send(
+        results.deletedCount ? "Document deleted" : "No document deleted"
+      );
+    }
+  );
 });
