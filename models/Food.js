@@ -1,8 +1,11 @@
-const { model, Schema } = require('mongoose')
+const { model, Schema } = require("mongoose");
 
-const Food = model('Food', new Schema({
-  name: { type: String, required: true },
-  calories: Number
-}))
+const Food = model(
+  "Food",
+  new Schema({
+    name: { type: String, required: true },
+    calories: Number,
+  })
+);
 
-module.exports = Food
+module.exports = Food;

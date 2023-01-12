@@ -1,17 +1,11 @@
-const express = require('express')
-const db = require('./config')
+const express = require("express");
+const db = require("./config");
 
-const app = express()
+const app = express();
 
-const { Food } = require('./models')
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
-app.get('/foods', async (req, res) => {
-  try {
-    const foods = await Food.find({})
-    res.json(foods)
-  } catch (err) {
-    res.status(500).json(err)
-  }
-})
+app.use(require("./routes"));
 
-db.once('open', () => app.listen(3001))
+db.once("open", () => app.listen(3001));
