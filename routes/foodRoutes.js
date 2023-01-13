@@ -1,9 +1,9 @@
 const router = require("express").Router();
-const { Food } = require("../models");
+const { Food, Ingredient } = require("../models");
 
 router.get("/foods", async (req, res) => {
   try {
-    const foods = await Food.find({});
+    const foods = await Food.find({}).populate("ingredients");
     res.json(foods);
   } catch (err) {
     res.status(500).json(err);
@@ -32,7 +32,7 @@ router.get("/foods/calories", async (req, res) => {
 
 router.get("/foods/:id", async (req, res) => {
   try {
-    const food = await Food.findById(req.params.id);
+    const food = await Food.findById(req.params.id).populate("ingredients");
     res.json(food);
   } catch (err) {
     res.status(500).json(err);
